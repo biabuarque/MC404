@@ -1,0 +1,8 @@
+RA: 257241
+Q1: [resposta letra a], [resposta letra b], [resposta letra c], [resposta letra d]
+Q2: [resposta letra a], [resposta letra b], [resposta letra c], [resposta letra d]
+Q3: [resposta letra a], [resposta letra b], [resposta letra c], [resposta letra d]
+Q4: [resposta letra a], [resposta letra b], [resposta letra c], [resposta letra d]
+Q5: [resposta letra a], [resposta letra b], [resposta letra c], [resposta letra d]
+Q6: [resposta letra a], [resposta letra b]
+Q7: [resposta]
