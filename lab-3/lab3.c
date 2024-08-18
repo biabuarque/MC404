@@ -67,52 +67,64 @@ int readDecimal(char str[]){
     return number;
 }
 
-void decimalToBinary(int number, char res[]){
-    int i = 31;
-    while (number > 0){
-        res[i] = number % 2 + '0';
-        number = number / 2;
-        i--;
+char* writeNumber(int number, int type){
+    char res[20];
+    int i = 0;
+
+    if (number < 0){
+        res[i++] = '-';
+        number = -number;
     }
-    res[32] = '\n';
-    res[33] = '\0';
+
+    while (number > 0){
+        res[i++] = number % 10 + '0';
+        number /= 10;
+    }
+
+    res[i++] = '\n';
+
+    res[i] = '\0';
+
+    return res;
 }
+
 
 int main()
 {
   char str[20];
   /* Read up to 20 bytes from the standard input into the str buffer */
   int n = read(STDIN_FD, str, 20);
-  int decimalinput = 0;
-  if (str[0] == '-' || (str[0] >= '0' && str[0] <= '9')){
-    decimalinput = 1;
-  }
+  int number = readDecimal(str), negative = (number < 0);
+  char res[20], inv[20];
+  int i = 0, j;
 
-  /* Read decimal number*/
-  int number = readDecimal(str);
-  /* Convert decimal to binary */
-  char binary[34];
-    int i = 31;
-    while (number > 0){
-        binary[i] = number % 2 + '0';
-        number = number / 2;
-        i--;
+    if (negative){
+        number = -number;
     }
-    binary[32] = '\n';
-    binary[33] = '\0';
 
-  /* Convert decimal to hexadecimal */
+    while (number > 0){
+        res[i++] = number % 2 + '0';
+        number /= 2;
+    }
 
-  /* Read hexadecimal number*/
+    // TODO: NOT WORKING!!!
+    if (negative){
+        res[i++] = '-';
+    }
+ 
+    j = i - 1;
+    
+    while (j >= 0){
+        inv[i - j - 1] = res[j];
+        j--;
+    }
 
-  /* Convert hexadecimal to binary */
+    inv[i++] = '\n';
 
-  /* Convert binary to decimal */
-
-  /* Swap endianness*/
-
+    inv[i] = '\0';
 
   /* Write n bytes from the str buffer to the standard output */
-  write(STDOUT_FD, binary, n);
+  write(STDOUT_FD, inv, n);
   return 0;
 }
+
