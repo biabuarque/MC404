@@ -49,70 +49,12 @@ void _start()
 #define STDIN_FD  0
 #define STDOUT_FD 1
 
-int readDecimal(char str[]){
-    int number = 0, start = 0;
-
-    if (str[start] == '-'){
-        start++;
-    }
-
-    for (int i = start; str[i] != '\n'; i++){
-        number = number * 10 + str[i] - '0';
-    }
-
-    if (start == 1){
-        number = -number;
-    }
-
-    return number;
-}
-
-void decimalToBinary(int number, char res[]){
-    int i = 31;
-    while (number > 0){
-        res[i] = number % 2 + '0';
-        number = number / 2;
-        i--;
-    }
-    res[32] = '\n';
-    res[33] = '\0';
-}
-
 int main()
 {
   char str[20];
   /* Read up to 20 bytes from the standard input into the str buffer */
   int n = read(STDIN_FD, str, 20);
-  int decimalinput = 0;
-  if (str[0] == '-' || (str[0] >= '0' && str[0] <= '9')){
-    decimalinput = 1;
-  }
-
-  /* Read decimal number*/
-  int number = readDecimal(str);
-  /* Convert decimal to binary */
-  char binary[34];
-    int i = 31;
-    while (number > 0){
-        binary[i] = number % 2 + '0';
-        number = number / 2;
-        i--;
-    }
-    binary[32] = '\n';
-    binary[33] = '\0';
-
-  /* Convert decimal to hexadecimal */
-
-  /* Read hexadecimal number*/
-
-  /* Convert hexadecimal to binary */
-
-  /* Convert binary to decimal */
-
-  /* Swap endianness*/
-
-
   /* Write n bytes from the str buffer to the standard output */
-  write(STDOUT_FD, binary, n);
+  write(STDOUT_FD, str, n);
   return 0;
 }
