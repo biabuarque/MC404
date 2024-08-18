@@ -98,41 +98,80 @@ void IntegertoDecimal(int number, int negative, char *result){
 
 void IntegertoBinary(int number, int negative, char *result){
     int i = 0, j;
-    char temp[34];
+    char temp[36];
 
     if (negative){
         number = -number;
     }
 
-    while (i < 32){
+    while (number > 0){
         temp[i++] = number % 2 + '0';
         number /= 2;
     }
  
     j = i - 1;
     
+    result[0] = '0';
+    result[1] = 'b';
+
     while (j >= 0){
-        result[i - j - 1] = temp[j];
+        result[i - j + 1] = temp[j];
         j--;
     }
 
-    result[i++] = '\n';
+    result[i + 2] = '\n';
 
-    result[i] = '\0';
+    result[i + 3] = '\0';
+}
+
+void IntegertoHexa(int number, int negative, char *result){
+    int i = 0, j;
+    char temp[34];
+
+    if (negative){
+        number = -number;
+    }
+
+    while (number > 0){
+        int rem = number % 16;
+        if (rem < 10){
+            temp[i++] = rem + '0';   
+        }
+        else{
+            temp[i++] = (rem - 10) + 'a';
+        }
+        number /= 16;
+    }
+ 
+    j = i - 1;
+    
+    result[0] = '0';
+    result[1] = 'x';
+    
+    while (j >= 0){
+        result[i - j + 1] = temp[j];
+        j--;
+    }
+
+    result[i + 2] = '\n';
+
+    result[i + 3] = '\0';
 }
 
 
 int main()
 {
-    char str[20], resultDecimal[34], resultBinary[34];
+    char str[20], resultDecimal[36], resultBinary[36], resultHexa[36];
     /* Read up to 20 bytes from the standard input into the str buffer */
     int n = read(STDIN_FD, str, 20);
     int number = readDecimal(str), negative = (number < 0);
-    IntegertoDecimal(number, negative, resultDecimal);
     IntegertoBinary(number, negative, resultBinary);
+    IntegertoDecimal(number, negative, resultDecimal);
+    IntegertoHexa(number, negative, resultHexa);
     /* Write n bytes from the str buffer to the standard output */
+    write(STDOUT_FD, resultBinary, 36);
     write(STDOUT_FD, resultDecimal, n);
-    write(STDOUT_FD, resultBinary, 34);
+    write(STDOUT_FD, resultHexa, 36);
     return 0;
 }
 
