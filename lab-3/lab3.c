@@ -67,64 +67,72 @@ int readDecimal(char str[]){
     return number;
 }
 
-char* writeNumber(int number, int type){
-    char res[20];
-    int i = 0;
+void IntegertoDecimal(int number, int negative, char *result){
+    int i = 0, j;
+    char temp[34];
 
-    if (number < 0){
-        res[i++] = '-';
+    if (negative){
         number = -number;
     }
 
     while (number > 0){
-        res[i++] = number % 10 + '0';
+        temp[i++] = number % 10 + '0';
         number /= 10;
     }
 
-    res[i++] = '\n';
-
-    res[i] = '\0';
-
-    return res;
-}
-
-
-int main()
-{
-  char str[20];
-  /* Read up to 20 bytes from the standard input into the str buffer */
-  int n = read(STDIN_FD, str, 20);
-  int number = readDecimal(str), negative = (number < 0);
-  char res[20], inv[20];
-  int i = 0, j;
-
     if (negative){
-        number = -number;
-    }
-
-    while (number > 0){
-        res[i++] = number % 2 + '0';
-        number /= 2;
-    }
-
-    // TODO: NOT WORKING!!!
-    if (negative){
-        res[i++] = '-';
+        temp[i++] = '-';
     }
  
     j = i - 1;
     
     while (j >= 0){
-        inv[i - j - 1] = res[j];
+        result[i - j - 1] = temp[j];
         j--;
     }
 
-    inv[i++] = '\n';
+    result[i++] = '\n';
 
-    inv[i] = '\0';
+    result[i] = '\0';
+}
 
-  /* Write n bytes from the str buffer to the standard output */
-  write(STDOUT_FD, inv, n);
-  return 0;
+void IntegertoBinary(int number, int negative, char *result){
+    int i = 0, j;
+    char temp[34];
+
+    if (negative){
+        number = -number;
+    }
+
+    while (i < 32){
+        temp[i++] = number % 2 + '0';
+        number /= 2;
+    }
+ 
+    j = i - 1;
+    
+    while (j >= 0){
+        result[i - j - 1] = temp[j];
+        j--;
+    }
+
+    result[i++] = '\n';
+
+    result[i] = '\0';
+}
+
+
+int main()
+{
+    char str[20], resultDecimal[34], resultBinary[34];
+    /* Read up to 20 bytes from the standard input into the str buffer */
+    int n = read(STDIN_FD, str, 20);
+    int number = readDecimal(str), negative = (number < 0);
+    IntegertoDecimal(number, negative, resultDecimal);
+    IntegertoBinary(number, negative, resultBinary);
+    /* Write n bytes from the str buffer to the standard output */
+    write(STDOUT_FD, resultDecimal, n);
+    write(STDOUT_FD, resultBinary, 34);
+    return 0;
 }
 
