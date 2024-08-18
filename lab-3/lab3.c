@@ -193,12 +193,35 @@ void IntegertoHexa(int number, int negative, char *result){
 
 }
 
-void BinarytoHexa(char binary[], char *result){
+int HexatoBinary(char hexa[], char *result){
+    result[0] = '0';
+    result[1] = 'b';
+    int start = 2;
+    for (int i = 2; hexa[i] != '\n'; i++){
+        int value;
+        if (hexa[i] <= '9'){
+            value = hexa[i] - '0';
+        }
+        else{
+            value = hexa[i] - 'a';
+        }
+        char tempBinary[10];
+        IntegertoBinary(value, 0, tempBinary);
+        for (int j = 0; j <= 4; j++){
+            result[start + j] = tempBinary[j + 2];
+        }
+        start += 4;
+    }
 
-}
+    result[start - 4] = '\n';
+    result[start - 3] = '\0';
 
-void HexatoBinary(char hexa[], char *result){
+    int size = start - 5;
+    if (size == 34 && result[3] == '1'){
+        size = -size;
+    }
 
+    return size;
 }
 
 int BinarytoInteger(char binary[], int negative, int size){
@@ -238,10 +261,19 @@ int main()
     if (str[1] != 'x'){
         int number = readDecimal(str), negative = (number < 0);
         int size = IntegertoBinary(number, negative, resultBinary);
-        IntegertoDecimal(BinarytoInteger(resultBinary, negative, size), negative, resultDecimal);
+        IntegertoDecimal(number, negative, resultDecimal);
         IntegertoHexa(number, negative, resultHexa);
     }
-    
+    else{
+        int size = HexatoBinary(str, resultBinary), negative = 0;
+        if (size < 0){
+            negative = 1;
+            size = -size;
+        }
+        int number = BinarytoInteger(resultBinary, negative, size);
+        IntegertoDecimal(number, negative, resultDecimal);
+        IntegertoHexa(number, negative, resultHexa);
+    }
     /* Write n bytes from the str buffer to the standard output */
     write(STDOUT_FD, resultBinary, 36);
     write(STDOUT_FD, resultDecimal, n);
