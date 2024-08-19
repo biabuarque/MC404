@@ -117,7 +117,7 @@ void twoComplement(char *binary){
     }
 }
 
-int IntegertoBinary(int number, int negative, char *result){
+int IntegertoBinary(int number, int negative, char *result, int sizeOfResult){
     int i = 0, j;
     char temp[36];
 
@@ -130,7 +130,7 @@ int IntegertoBinary(int number, int negative, char *result){
     }
 
     else{
-        while (number > 0){
+        while (((sizeOfResult== 0) && number > 0) || (i < sizeOfResult)){
         temp[i++] = number % 2 + '0';
         number /= 2;
         }
@@ -196,8 +196,8 @@ void IntegertoHexa(int number, int negative, char *result){
 int HexatoBinary(char hexa[], char *result){
     result[0] = '0';
     result[1] = 'b';
-    int start = 2;
-    for (int i = 2; hexa[i] != '\n'; i++){
+    int start = 2, i = 2, tempsize;
+    do {
         int value;
         if (hexa[i] <= '9'){
             value = hexa[i] - '0';
@@ -206,21 +206,28 @@ int HexatoBinary(char hexa[], char *result){
             value = hexa[i] - 'a';
         }
         char tempBinary[10];
-        IntegertoBinary(value, 0, tempBinary);
-        for (int j = 0; j <= 4; j++){
+
+        if (i == 2){
+            tempsize = IntegertoBinary(value, 0, tempBinary, 0);
+        }
+        else{
+            tempsize = IntegertoBinary(value, 0, tempBinary, 4);
+        }
+        for (int j = 0; j < tempsize - 1; j++){
             result[start + j] = tempBinary[j + 2];
         }
-        start += 4;
-    }
+        start += tempsize - 1;
+        i++;
+    } while (hexa[i] != '\n');
 
-    result[start - 4] = '\n';
-    result[start - 3] = '\0';
+    result[start++] = '\n';
+    result[start] = '\0';
 
-    int size = start - 5;
+    int size = start - 2;
     if (size == 34 && result[3] == '1'){
         size = -size;
     }
-
+    
     return size;
 }
 
@@ -260,7 +267,7 @@ int main()
     int n = read(STDIN_FD, str, 20);
     if (str[1] != 'x'){
         int number = readDecimal(str), negative = (number < 0);
-        int size = IntegertoBinary(number, negative, resultBinary);
+        int size = IntegertoBinary(number, negative, resultBinary, 0);
         IntegertoDecimal(number, negative, resultDecimal);
         IntegertoHexa(number, negative, resultHexa);
     }
