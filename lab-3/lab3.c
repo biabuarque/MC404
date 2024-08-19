@@ -255,14 +255,38 @@ int BinarytoInteger(char binary[], int negative, int size){
     return number;
 }
 
-void swapEndian (char binary[], char *result){
+int swapEndian (char binary[], char *result, int size){
+    result[0] = '0';
+    result[1] = 'b';
+    int i = 6, j;
+    do {
+        for(j = 0; j < 8; j++){
+            if (binary[size - i + j - 1] == 'b'){
+                break;
+            }
+            result[i - 4 + j] = binary[size - i + j - 1];
+        }
+        if (binary[size - i + j - 1] == 'b'){
+                break;
+            }
+        i += 8;
+    } while(1);
 
+    if (size < 34){
+        for (int k = i - 4 + j + 1; k < 34; k++){
+            result[k] = '0';
+        }
+    }
+    result[34] = '\n';
+    result[35] = '\0';
+
+    return (result[2] == '1');
 }
 
 
 int main()
 {
-    char str[20], resultDecimal[36], resultBinary[36], resultHexa[36], resultSwapped[36];
+    char str[20], resultDecimal[36], resultBinary[36], resultHexa[36], binarySwapped[36], resultSwapped[36];
     /* Read up to 20 bytes from the standard input into the str buffer */
     int n = read(STDIN_FD, str, 20);
     if (str[1] != 'x'){
@@ -270,6 +294,9 @@ int main()
         int size = IntegertoBinary(number, negative, resultBinary, 0);
         IntegertoDecimal(number, negative, resultDecimal);
         IntegertoHexa(number, negative, resultHexa);
+        int swappedNegative = swapEndian(resultBinary, binarySwapped, size);
+        int swappedNumber = BinarytoInteger(binarySwapped, swappedNegative, 33);
+        IntegertoDecimal(swappedNumber, swappedNegative, resultSwapped);
     }
     else{
         int size = HexatoBinary(str, resultBinary), negative = 0;
@@ -285,6 +312,8 @@ int main()
     write(STDOUT_FD, resultBinary, 36);
     write(STDOUT_FD, resultDecimal, n);
     write(STDOUT_FD, resultHexa, 36);
+    write(STDOUT_FD, binarySwapped, 36);
+    write(STDOUT_FD, resultSwapped, 36);
     return 0;
 }
 
