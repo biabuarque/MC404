@@ -231,6 +231,40 @@ int HexatoBinary(char hexa[], char *result){
     return size;
 }
 
+void BinarytoHexa(char binary[], char *result, int size){
+    char temp[20];
+    int j = 2, k;
+    for (int i = size; i > 1; i -= 4){
+        int value = 0;
+        for (k = 0; k < 4; k++){
+            if (binary[i - k] == 'b'){
+                break;
+            }
+            value += ((binary[i - k] - '0') << k);
+        }
+        if (value < 10){
+            temp[j++] = value + '0';
+        }
+        else{
+            temp[j++] = (value - 10) + 'a';
+        }
+    }
+
+    result[0] = '0';
+    result[1] = 'x';
+    
+    int l = j - 1;
+
+    while (l >= 0){
+        result[j - l + 1] = temp[l];
+        l--;
+    }
+
+    result[j + 2] = '\n';
+
+    result[j + 3] = '\0';
+}
+
 int BinarytoInteger(char binary[], int negative, int size){
     int number = 0;
     if (negative){
@@ -309,10 +343,8 @@ int main()
         int number = readDecimal(str), negative = (number < 0);
         size = IntegertoBinary(number, negative, resultBinary, 0);
         IntegertoDecimal(number, negative, resultDecimal);
-        IntegertoHexa(number, negative, resultHexa);
-        int swappedNegative = swapEndian(resultBinary, binarySwapped, size);
-        int swappedNumber = BinarytoInteger(binarySwapped, swappedNegative, 33);
-        IntegertoDecimal(swappedNumber, swappedNegative, resultSwapped);
+        BinarytoHexa(resultBinary, resultHexa, size);
+        write(STDOUT_FD, resultHexa, 36);
     }
     else{
         size = HexatoBinary(str, resultBinary);
@@ -323,7 +355,8 @@ int main()
         }
         int number = BinarytoInteger(resultBinary, negative, size);
         IntegertoDecimal(number, negative, resultDecimal);
-        IntegertoHexa(number, negative, resultHexa);
+        BinarytoHexa(resultBinary, resultHexa, size);
+        write(STDOUT_FD, resultHexa, 36);
     }
     int swappedNegative = swapEndian(resultBinary, binarySwapped, size);
     int swappedNumber = BinarytoInteger(binarySwapped, swappedNegative, 33);
@@ -331,7 +364,6 @@ int main()
     /* Write n bytes from the str buffer to the standard output */
     write(STDOUT_FD, resultBinary, 36);
     write(STDOUT_FD, resultDecimal, n);
-    write(STDOUT_FD, resultHexa, 36);
     write(STDOUT_FD, resultSwapped, 36);
     return 0;
 }
