@@ -255,25 +255,43 @@ int BinarytoInteger(char binary[], int negative, int size){
     return number;
 }
 
-int swapEndian (char binary[], char *result, int size){
+int fillBinary(char binary[], int size, char *result){
     result[0] = '0';
     result[1] = 'b';
+    int rem = (size - 2) % 8;
+    for (int i = 0; i <= rem; i++){
+        result[i + 2] = '0';
+    }
+    for (int i = 0; i < size; i++){
+        result[i + rem + 3] = binary[i + 2];
+    }
+
+    return size + (rem);
+}
+
+
+int swapEndian (char binary[], char *result, int unfilledSize){
+    result[0] = '0';
+    result[1] = 'b';
+    char filledBinary[36];
+    int size = fillBinary(binary, unfilledSize, filledBinary);
+    write(STDOUT_FD, filledBinary, 36);
     int i = 6, j;
     do {
         for(j = 0; j < 8; j++){
-            if (binary[size - i + j - 1] == 'b'){
+            if (filledBinary[size - i + j] == 'b'){
                 break;
             }
-            result[i - 4 + j] = binary[size - i + j - 1];
+            result[i - 4 + j] = filledBinary[size - i + j];
         }
-        if (binary[size - i + j - 1] == 'b'){
+        if (filledBinary[size - i + j] == 'b'){
                 break;
             }
         i += 8;
     } while(1);
 
     if (size < 34){
-        for (int k = i - 4 + j + 1; k < 34; k++){
+        for (int k = i - 4 + j; k < 34; k++){
             result[k] = '0';
         }
     }
@@ -283,7 +301,6 @@ int swapEndian (char binary[], char *result, int size){
     return (result[2] == '1');
 }
 
-
 int main()
 {
     char str[20], resultDecimal[36], resultBinary[36], resultHexa[36], binarySwapped[36], resultSwapped[36];
@@ -292,6 +309,7 @@ int main()
     if (str[1] != 'x'){
         int number = readDecimal(str), negative = (number < 0);
         int size = IntegertoBinary(number, negative, resultBinary, 0);
+        write(STDOUT_FD, resultBinary, 36);
         IntegertoDecimal(number, negative, resultDecimal);
         IntegertoHexa(number, negative, resultHexa);
         int swappedNegative = swapEndian(resultBinary, binarySwapped, size);
