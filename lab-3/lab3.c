@@ -110,32 +110,27 @@ int fillBinary(char binary[], int size, char *result){
     return 34;
 }
 
-void twoComplement(char *binary, int size){
-    char filledBinary[36];
-    int filled = fillBinary(binary, size, filledBinary);
+void twoComplement(char *binary){
     for (int i = 33; i > 1; i--){
-        if (filledBinary[i] == '0'){
-            filledBinary[i] = '1';
+        if (binary[i] == '0'){
+            binary[i] = '1';
         }
-        else if (filledBinary[i] == '1'){
-            filledBinary[i] = '0';
+        else{
+            binary[i] = '0';
         }
     }
 
     for (int i = 33; i > 1; i--){
-        if (filledBinary[i] == '0'){
-            filledBinary[i] = '1';
+        if (binary[i] == '0'){
+            binary[i] = '1';
             break;
         }
-        else if (filledBinary[i] == '1'){
-            filledBinary[i] = '0';
+        else{
+            binary[i] = '0';
         }
     }
-
-    for (int i = 0; i < 36; i++){
-        binary[i] = filledBinary[i];
-    }
 }
+
 
 int IntegertoBinary(int number, int negative, char *result, int sizeOfResult){
     int i = 0, j, size;
@@ -167,17 +162,13 @@ int IntegertoBinary(int number, int negative, char *result, int sizeOfResult){
     }
 
     if (negative){
-        twoComplement(result, i + 2);
-        result[i + 3] = '\n';
-        result[i + 4] = '\0';
-        size = 34;
+        twoComplement(result);
+    }
 
-    }
-    else{
-        result[i + 2] = '\n';
-        result[i + 3] = '\0';
-        size = i + 1;
-    }
+    result[i + 2] = '\n';
+    result[i + 3] = '\0';
+    size = i + 1;
+
     return size;
 }
 
@@ -292,13 +283,13 @@ void BinarytoHexa(char binary[], char *result, int size){
 int BinarytoInteger(char binary[], int negative, int size){
     int number = 0;
     if (negative){
-        twoComplement(binary, size);
+        twoComplement(binary);
         int j = 0;
         for (int i = size; i > 1; i--){
             number += ((binary[i] - '0') << j);
             j++;
         }
-        twoComplement(binary, size);
+        twoComplement(binary);
         return -number;
     }
 
@@ -313,10 +304,13 @@ int BinarytoInteger(char binary[], int negative, int size){
     return number;
 }
 
-int swapEndian (char binary[], char *result, int unfilledSize){
+int swapEndian (char binary[], char *result, int unfilledSize, int negative){
     result[0] = '0';
     result[1] = 'b';
     char filledBinary[36];
+    if (negative){
+    twoComplement(binary);
+    }
     int size;
     if (unfilledSize < 34){
         size = fillBinary(binary, unfilledSize, filledBinary);
@@ -327,6 +321,8 @@ int swapEndian (char binary[], char *result, int unfilledSize){
             filledBinary[i] = binary[i];
         }
     }
+    twoComplement(filledBinary);
+    twoComplement(binary);
     int i = 6, j;
     do {
         for(j = 0; j < 8; j++){
@@ -380,7 +376,7 @@ int main()
     BinarytoHexa(resultBinary, resultHexa, size);
     write(STDOUT_FD, resultHexa, 36);
 
-    int swappedNegative = swapEndian(resultBinary, binarySwapped, size);
+    int swappedNegative = swapEndian(resultBinary, binarySwapped, size, negative);
     int swappedNumber = BinarytoInteger(binarySwapped, swappedNegative, 33);
     IntegertoDecimal(swappedNumber, swappedNegative, resultSwapped);
     write(STDOUT_FD, resultSwapped, 36);
