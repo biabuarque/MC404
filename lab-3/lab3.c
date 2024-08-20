@@ -218,7 +218,7 @@ int HexatoBinary(char hexa[], char *result){
             value = hexa[i] - '0';
         }
         else{
-            value = hexa[i] - 'a';
+            value = hexa[i] - 'a' + 10;
         }
         char tempBinary[10];
 
@@ -228,6 +228,7 @@ int HexatoBinary(char hexa[], char *result){
         else{
             tempsize = IntegertoBinary(value, 0, tempBinary, 4);
         }
+        
         for (int j = 0; j < tempsize - 1; j++){
             result[start + j] = tempBinary[j + 2];
         }
@@ -239,7 +240,7 @@ int HexatoBinary(char hexa[], char *result){
     result[start] = '\0';
 
     int size = start - 2;
-    if (size == 34 && result[3] == '1'){
+    if (size == 33 && result[2] == '1'){
         size = -size;
     }
     
