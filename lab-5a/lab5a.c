@@ -49,22 +49,53 @@ void _start()
 #define STDIN_FD  0
 #define STDOUT_FD 1
 
-int readDecimal(char str[]){
-    int number = 0, start = 0;
+int readDecimal(char str[], int start){
+    int number = 0, negative = 0;
 
     if (str[start] == '-'){
-        start++;
+        negative = 1;
     }
 
-    for (int i = start; str[i] != '\n'; i++){
+    start++;
+
+    for (int i = start; str[i] != ' ' && str[i] != '\n'; i++){
         number = number * 10 + str[i] - '0';
     }
 
-    if (start == 1){
+    if (negative){
         number = -number;
     }
 
     return number;
+}
+
+void IntegertoDecimal(unsigned int number, int negative, char *result){
+    int i = 0, j;
+    char temp[34];
+
+    if (negative){
+        number = -number;
+    }
+
+    while (number > 0){
+        temp[i++] = number % 10 + '0';
+        number /= 10;
+    }
+
+    if (negative){
+        temp[i++] = '-';
+    }
+ 
+    j = i - 1;
+    
+    while (j >= 0){
+        result[i - j - 1] = temp[j];
+        j--;
+    }
+
+    result[i++] = '\n';
+
+    result[i] = '\0';
 }
 
 void twoComplement(char *binary){
@@ -129,42 +160,6 @@ int IntegertoBinary(int number, int negative, char *result, int sizeOfResult){
     return size;
 }
 
-/* Warning: apply only for positive numbers*/
-void IntegertoHexa(int number, int negative, char *result){
-    int i = 0, j;
-    char temp[34];
-
-    if (negative){
-        number = -number;
-    }
-
-    while (number > 0){
-        int rem = number % 16;
-        if (rem < 10){
-            temp[i++] = rem + '0';   
-        }
-        else{
-            temp[i++] = (rem - 10) + 'a';
-        }
-        number /= 16;
-    }
- 
-    j = i - 1;
-    
-    result[0] = '0';
-    result[1] = 'x';
-    
-    while (j >= 0){
-        result[i - j + 1] = temp[j];
-        j--;
-    }
-
-    result[i + 2] = '\n';
-
-    result[i + 3] = '\0';
-
-}
-
 long long int BinarytoInteger(char binary[], int negative, int size){
     long long int number = 0;
     if (negative){
@@ -189,29 +184,81 @@ long long int BinarytoInteger(char binary[], int negative, int size){
     return number;
 }
 
-/* Provided by book. Check for redundance from IntegertoHexa...*/
-void hex_code(int val){
-    char hex[11];
-    unsigned int uval = (unsigned int) val, aux;
-
-    hex[0] = '0';
-    hex[1] = 'x';
-    hex[10] = '\n';
-
-    for (int i = 9; i > 1; i--){
-        aux = uval % 16;
-        if (aux >= 10)
-            hex[i] = aux - 10 + 'A';
-        else
-            hex[i] = aux + '0';
-        uval = uval / 16;
+void BinarytoHexa(char binary[], char *result, int size){
+    char temp[20];
+    int j = 0, k;
+    for (int i = size; i > 1; i -= 4){
+        int value = 0;
+        for (k = 0; k < 4; k++){
+            if (binary[i - k] == 'b'){
+                break;
+            }
+            value += ((binary[i - k] - '0') << k);
+        }
+        if (value < 10){
+            temp[j++] = value + '0';
+        }
+        else{
+            temp[j++] = (value - 10) + 'A';
+        }
     }
-    write(1, hex, 11);
+
+    result[0] = '0';
+    result[1] = 'x';
+    
+    int l = j - 1;
+
+    while (l >= 0){
+        result[j - l + 1] = temp[l];
+        l--;
+    }
+
+    result[j + 2] = '\n';
+
+    result[j + 3] = '\0';
+}
+
+void concatenate(char *result, char *b1,  char *b2,  char *b3,  char *b4,  char *b5){
+    result[0] = '0';
+    result[1] = 'b';
+    for (int i = 2; i < 13; i++){
+        result[i] = b1[21 + i];
+    }
+    for (int i = 13; i < 18; i++){
+        result[i] = b2[16 + i];
+    }
+    for (int i = 18; i < 23; i++){
+        result[i] = b3[11 + i];
+    }
+    for (int i = 23; i < 31; i++){
+        result[i] = b4[3 + i];
+    }
+    for (int i = 31; i < 34; i++){
+        result[i] = b5[i];
+    }
+    result[34] = '\n';
+    result[35] = '\0';
 }
 
 
 int main()
 {
+    char input[30], i1[36], i2[36], i3[36], i4[36], i5[36], result[36], resultHexa[36];
+    int n1, n2, n3, n4, n5;
+    int n = read(STDIN_FD, input, 30);
+    n1 = readDecimal(input, 0);
+    n2 = readDecimal(input, 6);
+    n3 = readDecimal(input, 12);
+    n4 = readDecimal(input, 18);
+    n5 = readDecimal(input, 24);
+    IntegertoBinary(n1, (n1 < 0), i1, 32);
+    IntegertoBinary(n2, (n2 < 0), i2, 32);
+    IntegertoBinary(n3, (n3 < 0), i3, 32);
+    IntegertoBinary(n4, (n4 < 0), i4, 32);
+    IntegertoBinary(n5, (n5 < 0), i5, 32);
+    concatenate(result, i5, i4, i3, i2, i1);
+    BinarytoHexa(result, resultHexa, 33);
+    write(STDOUT_FD, resultHexa, 36);    
     return 0;
 }
 
