@@ -447,6 +447,53 @@ int main()
         of a RISC-V instruction on a single int variable, paying attention to each instruction's
         particularities and print the final result using the hex_code function.
     */
+
+    char input[42];
+    int size = read(0, input, 42);
+    InstData data;
+    get_inst_data(input, &data);
+    
+    if (data.type == R){
+        int inst = data.opcode | (data.rd << 7) | (data.funct3 << 12) | (data.rs1 << 15) | (data.rs2 << 20) | (data.funct7 << 25);
+        hex_code(inst);
+    } 
+    
+    else if (data.type == I){
+        int inst = data.opcode | (data.rd << 7) | (data.funct3 << 12) | (data.rs1 << 15) | (data.imm << 20);
+        hex_code(inst);
+    } 
+    
+    else if (data.type == S){
+        int imm11_5 = (data.imm >> 5) & 127;
+        int imm4_0 = data.imm & 15;
+        int inst = data.opcode | (imm4_0 << 7) | (data.funct3 << 12) | (data.rs1 << 15) | (data.rs2 << 20) | (imm11_5 << 25);
+        hex_code(inst);
+    } 
+    
+    else if (data.type == B){
+        int imm12 = (data.imm >> 12);
+        int imm10_5 = (data.imm >> 5) & 63;
+        int imm4_1 = (data.imm >> 1) & 15;
+        int imm11 = (data.imm >> 11) & 1;
+        int inst = data.opcode | (imm11 << 7) | (imm4_1 << 8) | (data.funct3 << 12) | (data.rs1 << 15) | (data.rs2 << 20) | (imm10_5 << 25) | (imm12 << 31);
+        hex_code(inst);
+    } 
+    
+    else if (data.type == U){
+        int imm31_12 = (data.imm >> 12);
+        int inst = data.opcode | (data.rd << 7) | (data.imm << 12);
+        hex_code(inst);
+    } 
+    
+    else if (data.type == J){
+        int imm20 = (data.imm >> 20) << 31;
+        int imm10_1 = ((data.imm >> 1) & 1023);
+        int imm11 = ((data.imm >> 11) & 1);
+        int imm19_12 = ((data.imm >> 12) & 255);
+        int inst = data.opcode | (data.rd << 7) | (imm19_12 << 12) | (imm11 << 20) | (imm10_1 << 21) | (imm20);
+        hex_code(inst);
+    }
+    
     return 0;
 }
 
