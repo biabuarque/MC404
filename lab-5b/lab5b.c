@@ -465,7 +465,7 @@ int main()
     
     else if (data.type == S){
         int imm11_5 = (data.imm >> 5) & 127;
-        int imm4_0 = data.imm & 15;
+        int imm4_0 = data.imm & 31;
         int inst = data.opcode | (imm4_0 << 7) | (data.funct3 << 12) | (data.rs1 << 15) | (data.rs2 << 20) | (imm11_5 << 25);
         hex_code(inst);
     } 
