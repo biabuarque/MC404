@@ -1,7 +1,6 @@
 .data
 input_address: .skip 0xa0  # buffer
 output_address: .skip 0xa0  # buffer
-string:  .asciz "Hello! It works!!!\n"
 
 .text
 read:
@@ -12,14 +11,16 @@ read:
     ecall
 
 
-    li t5, 10
-    jal a0, first_number
+    
+    jal a0, first
 
+# to_integer -> converts 4-byte inputs to its respective integer value
 to_integer:
     li t0, 0
     li t2, 0
     li t3, 3
-loop:
+
+    loop:
     lbu t1, (a1)
     add t1, t1, -48
     add t0, t0, t1
@@ -31,101 +32,63 @@ loop:
     addi a1, a1, 2
     jalr t6, 0(a0)
 
-first_number:
+first: # converts each input to integer
     jal a0, to_integer
     mv a3, t0
 
-second_number:
     jal a0, to_integer
     mv a4, t0
 
-third_number:
     jal a0, to_integer
     mv a5, t0
 
-fourth_number:
     jal a0, to_integer
     mv a6, t0
 
-square_root:
+    jal s11, then
+
+# square_root -> calculates the square root of a number
+square_root: 
+    li t5, 10
     li t6, 0
-    mv t0, a3
+    mv t0, s1
     srli t0, t0, 1
     slti t1, t0, 1
     add t0, t0, t1
 
-    for_1:
-    mv t4, a3
+    for:
+    mv t4, s1
     div t4, t4, t0
     add t0, t0, t4
     srli t0, t0, 1
     slti t1, t0, 1
-    add t0, t0, t1
-
+    add t0, t0, t1 
 
     addi t6, t6, 1
-    blt t6, t5, for_1
+    blt t6, t5, for
+
+    mv s1, t0
+    jalr s11, 0(a0)
+
+then: # calculates the square root of each input
+    mv s1, a3;
+    jal a0, square_root
+    mv a3, s1
+
+    mv s1, a4;
+    jal a0, square_root
+    mv a4, s1
+
+    mv s1, a5;
+    jal a0, square_root
+    mv a5, s1
+
+    mv s1, a6;
+    jal a0, square_root
+    mv a6, s1
+
     
-    mv a3, t0
-
-    li t6, 0
-    mv t0, a4
-    srli t0, t0, 1
-    slti t1, t0, 1
-    add t0, t0, t1
-    
-    for_2:
-    mv t4, a4
-    div t4, t4, t0
-    add t0, t0, t4
-    srli t0, t0, 1
-    slti t1, t0, 1
-    add t0, t0, t1
-
-    addi t6, t6, 1
-    blt t6, t5, for_2
-
-    mv a4, t0
-
-    li t6, 0
-    mv t0, a5
-    srli t0, t0, 1
-    slti t1, t0, 1
-    add t0, t0, t1
-
-    for_3:
-    mv t4, a5
-    div t4, t4, t0
-    add t0, t0, t4
-    srli t0, t0, 1
-    slti t1, t0, 1
-    add t0, t0, t1
-
-    addi t6, t6, 1
-    blt t6, t5, for_3
-
-    mv a5, t0
-
-    li t6, 0
-    mv t0, a6
-    srli t0, t0, 1
-    slti t1, t0, 1
-    add t0, t0, t1
-
-    for_4:
-    mv t4, a6
-    div t4, t4, t0
-    add t0, t0, t4
-    srli t0, t0, 1
-    slti t1, t0, 1
-    add t0, t0, t1
-
-    addi t6, t6, 1
-    blt t6, t5, for_4
-
-    mv a6, t0
-    
-build_output:
+build_output: # converts the integer values to string (for the future: optimize!)
     li s0, 32
     la a1, output_address
 
