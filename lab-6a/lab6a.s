@@ -13,72 +13,38 @@ read:
 
 
     li t5, 10
+    jal a0, first_number
+
+to_integer:
+    li t0, 0
+    li t2, 0
+    li t3, 3
+loop:
+    lbu t1, (a1)
+    add t1, t1, -48
+    add t0, t0, t1
+    mul t0, t0, t5
+    addi a1, a1, 1
+    addi t2, t2, 1
+    blt t2, t3, loop
+
+    addi a1, a1, 2
+    jalr t6, 0(a0)
+
 first_number:
-    lbu t0, 0(a1)
-    addi t0, t0, -48
-    mul t0, t0, t5
-    lbu t1, 1(a1)
-    addi t1, t1, -48
-    add t0, t0, t1
-    mul t0, t0, t5
-    lbu t1, 2(a1)
-    addi t1, t1, -48
-    add t0, t0, t1
-    mul t0, t0, t5
-    lbu t1, 3(a1)
-    addi t1, t1, -48
-    add t0, t0, t1
+    jal a0, to_integer
     mv a3, t0
 
 second_number:
-    lbu t0, 5(a1)
-    addi t0, t0, -48
-    mul t0, t0, t5
-    lbu t1, 6(a1)
-    addi t1, t1, -48
-    add t0, t0, t1
-    mul t0, t0, t5
-    lbu t1, 7(a1)
-    addi t1, t1, -48
-    add t0, t0, t1
-    mul t0, t0, t5
-    lbu t1, 8(a1)
-    addi t1, t1, -48
-    add t0, t0, t1
+    jal a0, to_integer
     mv a4, t0
 
 third_number:
-    lbu t0, 10(a1)
-    addi t0, t0, -48
-    mul t0, t0, t5
-    lbu t1, 11(a1)
-    addi t1, t1, -48
-    add t0, t0, t1
-    mul t0, t0, t5
-    lbu t1, 12(a1)
-    addi t1, t1, -48
-    add t0, t0, t1
-    mul t0, t0, t5
-    lbu t1, 13(a1)
-    addi t1, t1, -48
-    add t0, t0, t1
+    jal a0, to_integer
     mv a5, t0
 
 fourth_number:
-    lbu t0, 15(a1)
-    addi t0, t0, -48
-    mul t0, t0, t5
-    lbu t1, 16(a1)
-    addi t1, t1, -48
-    add t0, t0, t1
-    mul t0, t0, t5
-    lbu t1, 17(a1)
-    addi t1, t1, -48
-    add t0, t0, t1
-    mul t0, t0, t5
-    lbu t1, 18(a1)
-    addi t1, t1, -48
-    add t0, t0, t1
+    jal a0, to_integer
     mv a6, t0
 
 square_root:
