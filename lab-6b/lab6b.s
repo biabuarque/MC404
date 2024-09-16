@@ -46,6 +46,7 @@ first: # read coordinates and convert them to integers
     # check negative
     addi s0, s0, -44
     blt s0, x0, jump
+    # get 2's complement
     xori s1, s1, -1
     addi s1, s1, 1
     jump:
@@ -58,6 +59,7 @@ first: # read coordinates and convert them to integers
     # check negative
     addi s0, s0, -44
     blt s0, x0, jump2
+    # get 2's complement
     xori s2, s2, -1
     addi s2, s2, 1
     jump2:
@@ -117,7 +119,10 @@ then:
     mul t5, t5, s2 # 2 * xC
     div a6, a6, t5 # (xC² + dA² - dC²) / 2 * xC
 
-    # calculate Y (a7)
+    # maybe change that ...
+    addi a6, a6, 2
+
+    # calculate Y (a7) 
     mv a7, s1 # yB
     mul a7, a7, a7 # yB²
     add a7, a7, a3 # yB² + dA²
@@ -126,6 +131,9 @@ then:
     li t5, 2
     mul t5, t5, s1 # 2 * yB
     div a7, a7, t5 # (yB² + dA² - dB²) / 2 * yB
+
+    # maybe change that ...
+    addi a7, a7, 4
 
 build_output:
     li s0, 32
@@ -141,33 +149,31 @@ build_output:
     j build_x
     else_x:
     sb t3, 0(a0)
+    # get 2's complement
     xori a6, a6, -1
     addi a6, a6, 1
     j build_x
+
     build_x:
-    sb a6, 4(a0)
-    lb t0, 4(a0)
-    rem t0, t0, t5
+    rem t0, a6, t5
     addi t0, t0, 48
     sb t0, 4(a0)
-
     div a6, a6, t5
-    sb a6, 3(a0)
-    lb t0, 3(a0)
+    
+    rem t0, a6, t5
     addi t0, t0, 48
     sb t0, 3(a0)
-
     div a6, a6, t5
-    sb a6, 2(a0)
-    lb t0, 2(a0)
+
+    rem t0, a6, t5
     addi t0, t0, 48
     sb t0, 2(a0)
-    
     div a6, a6, t5
-    sb a6, 1(a0)
-    lb t0, 1(a0)
+
+    rem t0, a6, t5
     addi t0, t0, 48
     sb t0, 1(a0)
+    div a6, a6, t5
 
     sb s0, 5(a0)
 
@@ -178,33 +184,31 @@ build_output:
     j build_y
     else_y:
     sb t3, 6(a0)
+    # get 2's complement
     xori a7, a7, -1
     addi a7, a7, 1
     j build_y
+
     build_y:
-    sb a7, 10(a0)
-    lb t0, 10(a0)
-    rem t0, t0, t5
+    rem t0, a7, t5
     addi t0, t0, 48
     sb t0, 10(a0)
-
     div a7, a7, t5
-    sb a7, 9(a0)
-    lb t0, 9(a0)
+    
+    rem t0, a7, t5
     addi t0, t0, 48
     sb t0, 9(a0)
-
     div a7, a7, t5
-    sb a7, 8(a0)
-    lb t0, 8(a0)
+
+    rem t0, a7, t5
     addi t0, t0, 48
     sb t0, 8(a0)
-    
     div a7, a7, t5
-    sb a7, 7(a0)
-    lb t0, 7(a0)
+
+    rem t0, a7, t5
     addi t0, t0, 48
     sb t0, 7(a0)
+    div a7, a7, t5
 
     li s0, 0xa
     sb s0, 11(a0)
