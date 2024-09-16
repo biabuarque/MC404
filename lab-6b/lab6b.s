@@ -45,9 +45,9 @@ first: # read coordinates and convert them to integers
     mv s1, t0
     # check negative
     addi s0, s0, -44
-    li s10, 1
     blt s0, x0, jump
-    li s10, -1
+    xori s1, s1, -1
+    addi s1, s1, 1
     jump:
 
     # xC
@@ -57,9 +57,9 @@ first: # read coordinates and convert them to integers
     mv s2, t0
     # check negative
     addi s0, s0, -44
-    li s11, 1
     blt s0, x0, jump2
-    li s11, -1
+    xori s2, s2, -1
+    addi s2, s2, 1
     jump2:
 
     # tA
@@ -134,13 +134,15 @@ build_output:
     li t3, 45
     la a0, output_address
 
-    bge s11, x0, if_xpos
+    bge a6, x0, if_xpos
     j else_x
     if_xpos:
     sb t2, 0(a0)
     j build_x
     else_x:
     sb t3, 0(a0)
+    xori a6, a6, -1
+    addi a6, a6, 1
     j build_x
     build_x:
     sb a6, 4(a0)
@@ -169,13 +171,15 @@ build_output:
 
     sb s0, 5(a0)
 
-    bge s10, x0, if_ypos
+    bge a7, x0, if_ypos
     j else_y
     if_ypos:
     sb t2, 6(a0)
     j build_y
     else_y:
     sb t3, 6(a0)
+    xori a7, a7, -1
+    addi a7, a7, 1
     j build_y
     build_y:
     sb a7, 10(a0)
