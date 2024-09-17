@@ -135,83 +135,74 @@ then:
     # maybe change that ...
     addi a7, a7, 4
 
-build_output:
-    li s0, 32
+    j output
+
+build:
+    li t4, 0
+    li t6, 4
     li t5, 10
+    addi a1, a1, 4
+    build_loop:
+    rem t0, s1, t5
+    addi t0, t0, 48
+    sb t0, 0(a1)
+    div s1, s1, t5
+    # pointers & counters
+    addi a1, a1, -1
+    addi t4, t4, 1
+    blt t4, t6, build_loop
+    # updates and returns
+    addi a1, a1, 5
+    jalr s11, 0(a0)
+
+output:
+    la a1, output_address
     li t2, 43
     li t3, 45
-    la a0, output_address
+    li t5, 10
 
     bge a6, x0, if_xpos
     j else_x
+
     if_xpos:
-    sb t2, 0(a0)
+    sb t2, 0(a1)
     j build_x
+
     else_x:
-    sb t3, 0(a0)
+    sb t3, 0(a1)
     # get 2's complement
     xori a6, a6, -1
     addi a6, a6, 1
-    j build_x
-
-    build_x:
-    rem t0, a6, t5
-    addi t0, t0, 48
-    sb t0, 4(a0)
-    div a6, a6, t5
     
-    rem t0, a6, t5
-    addi t0, t0, 48
-    sb t0, 3(a0)
-    div a6, a6, t5
-
-    rem t0, a6, t5
-    addi t0, t0, 48
-    sb t0, 2(a0)
-    div a6, a6, t5
-
-    rem t0, a6, t5
-    addi t0, t0, 48
-    sb t0, 1(a0)
-    div a6, a6, t5
-
-    sb s0, 5(a0)
+    build_x:
+    mv s1, a6
+    jal a0, build
+    
+    # insert space
+    li s0, 32
+    sb s0, 0(a1)
+    addi a1, a1, 1
 
     bge a7, x0, if_ypos
     j else_y
+
     if_ypos:
-    sb t2, 6(a0)
+    sb t2, 0(a1)
     j build_y
+
     else_y:
-    sb t3, 6(a0)
+    sb t3, 0(a1)
     # get 2's complement
     xori a7, a7, -1
     addi a7, a7, 1
-    j build_y
 
     build_y:
-    rem t0, a7, t5
-    addi t0, t0, 48
-    sb t0, 10(a0)
-    div a7, a7, t5
-    
-    rem t0, a7, t5
-    addi t0, t0, 48
-    sb t0, 9(a0)
-    div a7, a7, t5
+    mv s1, a7
+    jal a0, build
 
-    rem t0, a7, t5
-    addi t0, t0, 48
-    sb t0, 8(a0)
-    div a7, a7, t5
-
-    rem t0, a7, t5
-    addi t0, t0, 48
-    sb t0, 7(a0)
-    div a7, a7, t5
-
+    # insert new line
     li s0, 0xa
-    sb s0, 11(a0)
+    sb s0, 0(a1)
 
 write:
     li a0, 1            # file descriptor = 1 (stdout)

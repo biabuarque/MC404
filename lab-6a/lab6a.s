@@ -10,15 +10,14 @@ read:
     li a7, 63 # syscall read (63)
     ecall
 
-
-    
-    jal a0, first
+    j first
 
 # to_integer -> converts 4-byte inputs to its respective integer value
 to_integer:
     li t0, 0
     li t2, 0
     li t3, 3
+    li t5, 10
 
     loop:
     lbu t1, (a1)
@@ -33,6 +32,7 @@ to_integer:
     jalr t6, 0(a0)
 
 first: # converts each input to integer
+    la a1, input_address
     jal a0, to_integer
     mv a3, t0
 
@@ -87,115 +87,48 @@ then: # calculates the square root of each input
     jal a0, square_root
     mv a6, s1
 
-    
-build_output: # converts the integer values to string (for the future: optimize!)
-    li s0, 32
-    la a1, output_address
+    j output
 
-    sb a3, 3(a1)
-    lb t0, 3(a1)
-    rem t0, t0, t5
-    addi t0, t0, 48
-    sb t0, 3(a1)
-
-    div a3, a3, t5
-    sb a3, 2(a1)
-    lb t0, 2(a1)
-    addi t0, t0, 48
-    sb t0, 2(a1)
-
-    div a3, a3, t5
-    sb a3, 1(a1)
-    lb t0, 1(a1)
-    addi t0, t0, 48
-    sb t0, 1(a1)
-    
-    div a3, a3, t5
-    sb a3, 0(a1)
-    lb t0, 0(a1)
+build:
+    li t1, 0
+    li t2, 4
+    li t5, 10
+    addi a1, a1, 4
+    build_loop:
+    rem t0, s1, t5
     addi t0, t0, 48
     sb t0, 0(a1)
-
-    sb s0, 4(a1)
-
-    sb a4, 8(a1)
-    lb t0, 8(a1)
-    rem t0, t0, t5
-    addi t0, t0, 48
-    sb t0, 8(a1)
-
-    div a4, a4, t5
-    sb a4, 7(a1)
-    lb t0, 7(a1)
-    addi t0, t0, 48
-    sb t0, 7(a1)
-
-    div a4, a4, t5
-    sb a4, 6(a1)
-    lb t0, 6(a1)
-    addi t0, t0, 48
-    sb t0, 6(a1)
+    div s1, s1, t5
+    # pointers & counters
+    addi a1, a1, -1
+    addi t1, t1, 1
+    blt t1, t2, build_loop
+    # updates and returns
+    addi a1, a1, 5
+    jalr s11, 0(a0)
     
-    div a4, a4, t5
-    sb a4, 5(a1)
-    lb t0, 5(a1)
-    addi t0, t0, 48
-    sb t0, 5(a1)
+output: # converts the integer values to string (for the future: optimize!)
+    li s0, 32
+    la a1, output_address
+    addi a1, a1, -1
 
-    sb s0, 9(a1)
+    mv s1, a3
+    jal a0, build
+    sb s0, 0(a1)
 
-    sb a5, 13(a1)
-    lb t0, 13(a1)
-    rem t0, t0, t5
-    addi t0, t0, 48
-    sb t0, 13(a1)
+    mv s1, a4
+    jal a0, build
+    sb s0, 0(a1)
 
-    div a5, a5, t5
-    sb a5, 12(a1)
-    lb t0, 12(a1)
-    addi t0, t0, 48
-    sb t0, 12(a1)
+    mv s1, a5
+    jal a0, build
+    sb s0, 0(a1)
 
-    div a5, a5, t5
-    sb a5, 11(a1)
-    lb t0, 11(a1)
-    addi t0, t0, 48
-    sb t0, 11(a1)
-    
-    div a5, a5, t5
-    sb a5, 10(a1)
-    lb t0, 10(a1)
-    addi t0, t0, 48
-    sb t0, 10(a1)
-
-    sb s0, 14(a1)
-
-    sb a6, 18(a1)
-    lb t0, 18(a1)
-    rem t0, t0, t5
-    addi t0, t0, 48
-    sb t0, 18(a1)
-
-    div a6, a6, t5
-    sb a6, 17(a1)
-    lb t0, 17(a1)
-    addi t0, t0, 48
-    sb t0, 17(a1)
-
-    div a6, a6, t5
-    sb a6, 16(a1)
-    lb t0, 16(a1)
-    addi t0, t0, 48
-    sb t0, 16(a1)
-    
-    div a6, a6, t5
-    sb a6, 15(a1)
-    lb t0, 15(a1)
-    addi t0, t0, 48
-    sb t0, 15(a1)
+    mv s1, a6
+    jal a0, build
 
     li s0, 0xa
-    sb s0, 19(a1)
+    sb s0, 0(a1)
 
 
 write:
