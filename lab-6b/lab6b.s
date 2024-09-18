@@ -48,10 +48,11 @@ first: # read coordinates and convert them to integers
     addi s0, s0, -44
     blt s0, x0, jump
     # get 2's complement
-    xori s1, s1, -1
-    addi s1, s1, 1
+    li s11, -1
+    mul s1, s1, s11
     jump:
-
+    
+    
     # xC
     lb s0, 0(a1)
     addi a1, a1, 1
@@ -61,8 +62,8 @@ first: # read coordinates and convert them to integers
     addi s0, s0, -44
     blt s0, x0, jump2
     # get 2's complement
-    xori s2, s2, -1
-    addi s2, s2, 1
+    li s11, -1
+    mul s2, s2, s11
     jump2:
 
     # tA
@@ -111,30 +112,28 @@ second: # a3 = dA, a4 = dB
 
 then:
     # calculate X (a6)
-    mv a6, s2 # xC
-    mul a6, a6, a6 # xC²
-    add a6, a6, a3 # xC² + dA²
-    sub a6, a6, a5 # xC² + dA² - dC²
+    mv t5, s2 # xC
+    mul t5, t5, t5 # xC²
+    mv a6, a3
+    add a6, a6, t5 # dA² + xC²
+    sub a6, a6, a5 # dA² + xC² - dC²
 
     li t5, 2
-    mul t5, t5, s2 # 2 * xC
-    div a6, a6, t5 # (xC² + dA² - dC²) / 2 * xC
-
-    # maybe change that ...
-    addi a6, a6, 2
+    mul t5, t5, s2
+    addi t5, t5, -2 # because of order of operations, this approximation was required
+    div a6, a6, t5 # (dA² + xC² - dC²) / 2 * xC
 
     # calculate Y (a7) 
-    mv a7, s1 # yB
-    mul a7, a7, a7 # yB²
-    add a7, a7, a3 # yB² + dA²
-    sub a7, a7, a4 # yB² + dA² - dB²
+    mv t5, s1 # yB
+    mul t5, t5, t5 # yB²
+    mv a7, a3
+    add a7, a7, t5 # dA² + yB²
+    sub a7, a7, a4 # dA² + yB² - dB²
 
     li t5, 2
-    mul t5, t5, s1 # 2 * yB
-    div a7, a7, t5 # (yB² + dA² - dB²) / 2 * yB
-
-    # maybe change that ...
-    addi a7, a7, 4
+    mul t5, t5, s1
+    addi t5, t5, -2 # because of order of operations, this approximation was required
+    div a7, a7, t5 # (dA² + yB² - dB²) / 2 * yB
 
     j output
 
@@ -172,8 +171,8 @@ output:
     else_x:
     sb t3, 0(a1)
     # get 2's complement
-    xori a6, a6, -1
-    addi a6, a6, 1
+    li s11, -1
+    mul a6, a6, s11
     
     build_x:
     mv s1, a6
@@ -194,8 +193,8 @@ output:
     else_y:
     sb t3, 0(a1)
     # get 2's complement
-    xori a7, a7, -1
-    addi a7, a7, 1
+    li s11, -1
+    mul a7, a7, s11
 
     build_y:
     mv s1, a7
