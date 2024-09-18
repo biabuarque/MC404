@@ -23,6 +23,8 @@ to_integer:
     li t0, 0
     li t2, 0
     li t3, 3
+    li t5, 10
+    
 loop:
     lbu t1, (a1)
     add t1, t1, -48
@@ -36,7 +38,6 @@ loop:
     jalr t6, 0(a0)
 
 first: # read coordinates and convert them to integers
-    li t5, 10
 
     # yB
     lb s0, 0(a1)
