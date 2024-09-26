@@ -5,11 +5,13 @@ DC = (TR - TC)* (3/10).
  DA = a3, DB = a4, DC = a5, X = a6, Y = a7
 */
 
-.data
+.bss
+.align 2
 input_address: .skip 0x100  # buffer
 output_address: .skip 0x60  # buffer
 
 .text
+.align 2
 read:
     li a0, 0  # file descriptor = 0 (stdin)
     la a1, input_address #  buffer to write the data
@@ -24,7 +26,7 @@ to_integer:
     li t2, 0
     li t3, 3
     li t5, 10
-    
+
 loop:
     lbu t1, (a1)
     add t1, t1, -48

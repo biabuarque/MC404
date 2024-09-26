@@ -2,11 +2,13 @@
 # second part: check encoding -> p xor a xor b xor c
 # third part: build outputs
 
-.data
+.bss
+.align 2
 input_address: .skip 0xd  # buffer
 output_address: .skip 0xf  # buffer
 
 .text
+.align 2
 read:
     li a0, 0  # file descriptor = 0 (stdin)
     la a1, input_address #  buffer to write the data

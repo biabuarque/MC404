@@ -1,8 +1,10 @@
-.data
+.bss
+.align 2
 input_address: .skip 0xa0  # buffer
 output_address: .skip 0xa0  # buffer
 
 .text
+.align 2
 read:
     li a0, 0  # file descriptor = 0 (stdin)
     la a1, input_address #  buffer to write the data
