@@ -42,7 +42,7 @@ to_integer:
     beq t1, t4, end_loop
     beq t1, t5, end_loop
     mul t0, t0, t5
-    add t1, t1, -48
+    addi t1, t1, -48
     add t0, t0, t1
     addi a1, a1, 1
     j loop
