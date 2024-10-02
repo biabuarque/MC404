@@ -1,13 +1,6 @@
-/*
-a3 = tamanho horizontal (comprimento); a4 = tamanho vertical (largura)
-a5 = file descriptor; a6 = ponteiro para imagem
-
-*/
-
 .bss
     .align 2
     input_address: .skip 0x4001C
-    filter: .skip 0x9
 
 .data
     .align 2
@@ -39,26 +32,24 @@ to_integer:
     li t5, 10
 
     loop:
-    lbu t1, (a1)
+    lbu t1, 0(a5)
     beq t1, t4, end_loop
     beq t1, t5, end_loop
     mul t0, t0, t5
     add t1, t1, -48
     add t0, t0, t1
-    addi a1, a1, 1
+    addi a5, a5, 1
     j loop
 
     end_loop:
-    addi a1, a1, 1
+    addi a5, a5, 1
     jalr x0, 0(a0)
 
 set_size: # process image size
-    mv a1, a5
     jal a0, to_integer
     mv a3, t0
     jal a0, to_integer
     mv a4, t0
-    mv a5, a1
 
     mv a0, a3
     mv a1, a4
@@ -66,7 +57,7 @@ set_size: # process image size
     ecall
 
     addi a5, a5, 4
-    j process_image
+    j filter_image
 
 set_pixel:
     process_rgb:
@@ -86,35 +77,76 @@ set_pixel:
 
     jalr x0, 0(t6)
 
-set_filter: # for sure there is a smarter way of doing this. !!!!!
-    la a0, filter
-    li t0, 0xffffffff
-    sw t0, 0(a0)
-    li t0, 0x08ffffff
-    sw t0, 4(a0)
-    li t0, 0xff
-    sb t0, 8(a0)
+set_filter: # let a5 be the input adress, s0 the adress to be modified
+    li s4, 0xff
+    li s5, 9
+    
+    mv s0, a5
+    lbu s1, 0(s0)
+    mul s1, s1, s5
+
+    addi s0, s0, -1
+
+    lbu s2, 0(s0)
+    sub s1, s1, s2
+    lbu s2, 1(s0)
+    sub s1, s1, s2
+    lbu s2, 2(s0)
+    sub s1, s1, s2
+
+    sub s0, s0, a3
+    
+    lbu s2, 0(s0)
+    sub s1, s1, s2
+    lbu s2, 1(s0)
+    sub s1, s1, s2
+    lbu s2, 2(s0)
+    sub s1, s1, s2
+
+    mv s0, a5
+    addi s0, s0, -1
+    add s0, s0, a3
+
+    lbu s2, 0(s0)
+    sub s1, s1, s2
+    lbu s2, 1(s0)
+    sub s1, s1, s2
+    lbu s2, 2(s0)
+    sub s1, s1, s2
+
+    bge s1, x0, not_less
+    li s1, 0
+    not_less:
+    blt s1, s4, not_above
+    mv s1, s4 
+    not_above:
+    jalr x0, 0(t6)
 
 filter_image:
-    la s0, filter
-    la s1, a5
-    li s2, 0
-    li s3, 0
-    li s4, 3
-    loop:
-    lbu s5, 0(s1)
-
-
-process_image:
-    # initialize x and y
-    li t0, 0
-    li t1, 0
+     # initialize i and j
+    li t0, 0 # i
+    li t1, 0 # j
     # loop of pixel setting
     mv t3, a3
     mv t4, a4
+    addi a5, a5, -1
     do:
-        lbu t2, (a5)
+        addi t5, a3, -1
+        addi t6, a4, -1
         addi a5, a5, 1
+        # conditions
+        beq t1, x0, black
+        beq t0, x0, black
+        beq t1, t6, black
+        beq t0, t5, black
+        j set
+        black:
+        li t2, 0
+        j end
+        set:
+        jal t6, set_filter
+        mv t2, s1
+        end:
         jal t6, set_pixel
         addi t0, t0, 1
         blt t0, t3, do
