@@ -1,37 +1,81 @@
-.bss
-    .align 2
-    buffer: .skip 100
-
-.text
-.align 2
+.global recursive_tree_search
+recursive_tree_search:
 /*
-linked_list_search:
-parameters: Node *head_node, int val
-returns: index (if node (index) sum of values = val, -1 if none)
+height = 0
+if (a0 == null):
+return 0
+else if (a0 == val):
+return 1
+else:
+height1 = recursive_tree_search(a0->left, val)
+if height1 > 0:
+return height1 + 1
+height2 = recursive_tree_search(a0->right, val)
+if height2 > 0:
+return height2 + 1
+else:
+return 0
 */
-.global linked_list_search
-linked_list_search:
-# a0 = head_node, a1 = val 
-    li a2, 0
-    search:
-    lw t0, 0(a0)
-    addi a0, a0, 4
-    lw t1, 0(a0)
-    add t2, t0, t1
-    beq t2, a1, end
-    addi a0, a0, 4
-    lw t3, 0(a0)
-    bne t3, x0, continue
-    li a2, -1
-    j end
-    continue:
-    mv a0, t3
-    addi a2, a2, 1
-    j search
-    end:
-    mv a0, a2
-    ret
+# a0 = root_node, a1 = val
 
+addi sp, sp, -12
+sw ra, 0(sp)
+sw s3, 4(sp)
+sw s4, 8(sp)
+
+
+lw a2, 0(a0)
+bne a2, x0, not_zero
+is_zero:
+lw ra, 0(sp)
+lw s3, 4(sp)
+lw s4, 8(sp)
+addi sp, sp, 12
+li a0, 0
+ret
+
+not_zero:
+bne a2, a1, not_equal # if value, add 1 to height
+lw ra, 0(sp)
+lw s3, 4(sp)
+lw s4, 8(sp)
+addi sp, sp, 12
+li a0, 1
+ret
+
+not_equal:
+lw s3, 4(a0)
+lw s4, 8(a0)
+
+left_child:
+mv a0, s3
+jal recursive_tree_search
+mv s3, a0
+
+beq s3, x0, right_child
+mv s5, s3
+addi s5, s5, 1
+lw ra, 0(sp)
+lw s3, 4(sp)
+lw s4, 8(sp)
+addi sp, sp, 12
+mv a0, s5
+ret
+
+right_child:
+mv a0, s4
+jal recursive_tree_search
+mv s4, a0
+
+beq s4, x0, is_zero
+mv s5, s4
+addi s5, s5, 1
+lw ra, 0(sp)
+lw s3, 4(sp)
+lw s4, 8(sp)
+addi sp, sp, 12
+mv a0, s5
+ret
 /*
 puts: write string to stdout
 parameters: const char *str (string terminated by \0)
