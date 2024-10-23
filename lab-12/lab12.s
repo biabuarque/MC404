@@ -133,7 +133,7 @@ addi sp, sp, -4
 sw ra, 0(sp)
 mv t5, sp
 start_conversion:
-rem t1, a0, a2
+remu t1, a0, a2
 li t2, 10
 blt t1, t2, continue_conversion # in case the base is hexadecimal, and the digit is greater than 9, it must be converted to a letter
 addi t1, t1, 7
@@ -141,7 +141,7 @@ continue_conversion:
 addi t1, t1, 48
 addi sp, sp, -1
 sb t1, 0(sp)
-div a0, a0, a2
+divu a0, a0, a2
 beq a0, x0, build
 j start_conversion
 build:
