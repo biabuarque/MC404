@@ -103,9 +103,10 @@ atoi:
     sw ra, 0(sp)
     li t1, 0
     jal read
+    li a2, 10
     li t2, 0xa
-    li t3, 45
-    li t4, 0x20
+    li t3, '-'
+    li t4, ' '
     bne a0, t3, positive
     li t3, -1
     jal read
@@ -165,6 +166,7 @@ jal conversion
 jal exit
 
 algebra:
+li a2, 10
 jal atoi
 mv a3, a0
 jal read
@@ -172,34 +174,36 @@ mv a4, a0
 jal read
 jal atoi
 mv a5, a0
-li t1, 42
+li t1, '*'
 bne a4, t1, addit
 mul a0, a3, a5
 j answer
 addit:
-addi t1, t1, 1
+li t1, '+'
 bne a4, t1, subt
 add a0, a3, a5
 j answer
 subt:
-addi t1, t1, 2
+li t1, '-'
 bne a4, t1, divi
 sub a0, a3, a5
 j answer
 divi:
+li t1, '/'
+bne a4, t1, exit
 div a0, a3, a5
 j answer
 answer:
 bge a0, x0, positive_ans
-mv a1, a0
-li a0, 45
+addi sp, sp, -4
+sw a0, 0(sp)
+li a0, '-'
 jal write
-mv a0, a1
+lw a0, 0(sp)
+addi sp, sp, 4
 li a1, -1
 mul a0, a0, a1
 positive_ans:
-li a2, 10
-addi t5, sp, -4
 jal conversion
 jal exit
 
